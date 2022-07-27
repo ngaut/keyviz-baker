@@ -1,0 +1,4 @@
+[schedule]
+max-merge-region-size = 1
+max-merge-region-keys = 1
+split-merge-interval = "2400h"

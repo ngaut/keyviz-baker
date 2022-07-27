@@ -1,0 +1,11 @@
+[rocksdb]
+max-open-files = 256
+
+[raftdb]
+max-open-files = 256
+
+[storage]
+reserve-space = 0
+
+[raftstore]
+pd-heartbeat-tick-interval = "5s"
