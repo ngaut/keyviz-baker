@@ -12,7 +12,7 @@ func main() {
 	dbFlag := flag.String("db", "", "Database connection string.")
 	skipPrepareFlag := flag.Bool("skip_prepare", false, "Skip prepare steps.")
 	alignSecFlag := flag.Int("align_sec", 0, "Seconds to align to start baking.")
-	intervalSecFlag := flag.Uint("interval_sec", 10, "Interval in seconds to draw each Y axis.")
+	intervalSecFlag := flag.Uint("interval_sec", 5, "Interval in seconds to draw each Y axis.")
 
 	flag.Parse()
 
