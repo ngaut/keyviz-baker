@@ -173,6 +173,11 @@ func (b *Baker) Bake(intervalSec uint) error {
 			return err
 		}
 	}
+	defer func() {
+		for _, xb := range xBakers {
+			xb.close()
+		}
+	}()
 
 	ticker := time.NewTicker(time.Duration(intervalSec) * time.Second)
 	done := make(chan struct{})

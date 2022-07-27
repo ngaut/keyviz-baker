@@ -28,6 +28,7 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
+	defer baker.Close()
 	fmt.Println("Baker made.")
 
 	if !skipPrepare {
