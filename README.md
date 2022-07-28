@@ -1,5 +1,9 @@
 # KeyvizBaker: A tool to bake heatmaps on [TiDB](https://github.com/pingcap/tidb)'s [Key Visualizer](https://docs.pingcap.com/tidb/dev/dashboard-key-visualizer)
 
+![Alt](image/elden_ring_baked.png "A glance")
+
+More samples can be found [here](image).
+
 ## Build
 ```
 go build
