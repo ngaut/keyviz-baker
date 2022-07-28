@@ -33,8 +33,8 @@ Optional:
 
 Examples:
 ```
-./keyviz-baker -name="mandelbrot" -image_path="img/mandelbrot.png" -db="root:@tcp(127.0.0.1:4000)/test" -align_sec=7 -interval_sec=5
+./keyviz-baker -name="mandelbrot" -image_path="image/mandelbrot.png" -db="root:@tcp(127.0.0.1:4000)/test" -align_sec=7 -interval_sec=5
 ```
 
 ## Acknowledgement
-To bake a nice heatmap requires lots of tweaks. I don't plan to describe all of these. But welcome to ask questions on this repo.
+To bake a nice heatmap requires lots of tweaks. I don't plan to describe all of them. But welcome to ask questions on this repo.
