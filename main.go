@@ -9,6 +9,7 @@ import (
 func main() {
 	nameFlag := flag.String("name", "keyviz_baker", "Name of this bake.")
 	imagePathFlag := flag.String("image_path", "", "Path to the image to render. Must be PNG format.")
+	ripenessFlag := flag.Uint("ripeness", 256, "Ripeness (or brightness) to bake.")
 	dbFlag := flag.String("db", "", "Database connection string. E.g. 'root:@tcp(127.0.0.1:4000)/test'.")
 	skipPrepareFlag := flag.Bool("skip_prepare", false, "Skip preparation.")
 	alignSecFlag := flag.Int("align_sec", 0, "Second to align to start baking.")
@@ -18,6 +19,7 @@ func main() {
 
 	name := *nameFlag
 	imagePath := *imagePathFlag
+	ripeness := *ripenessFlag
 	db := *dbFlag
 	skipPrepare := *skipPrepareFlag
 	alignSec := *alignSecFlag
@@ -33,7 +35,7 @@ func main() {
 	}
 
 	fmt.Println("Making baker.")
-	baker, err := MakeBaker(name, imagePath, db)
+	baker, err := MakeBaker(name, imagePath, ripeness, db)
 	if err != nil {
 		panic(err.Error())
 	}

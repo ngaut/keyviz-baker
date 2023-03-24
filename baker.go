@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const WELLDONE = 256
+const MaxColor = 256
 
 type xBaker struct {
 	stmt *sql.Stmt
@@ -29,16 +29,17 @@ func (xb *xBaker) close() {
 	_ = xb.stmt.Close()
 }
 
-func (xb *xBaker) bake(ripeness uint8) error {
+func (xb *xBaker) bake(ripeness int) error {
 	_, err := xb.stmt.Exec(ripeness)
 	return err
 }
 
 type yBaker struct {
+	ripenessFactor float64
 }
 
-func makeYBaker() *yBaker {
-	return &yBaker{}
+func makeYBaker(ripenessFactor float64) *yBaker {
+	return &yBaker{ripenessFactor: ripenessFactor}
 }
 
 func (yb *yBaker) bake(image image.Image, xBakers []*xBaker, x int) {
@@ -48,10 +49,11 @@ func (yb *yBaker) bake(image image.Image, xBakers []*xBaker, x int) {
 	for i := range xBakers {
 		y := i
 		xb := xBakers[y]
-		ripeness := color.GrayModel.Convert(image.At(x, ny-1-y)).(color.Gray)
+		ripeness := int(yb.ripenessFactor * float64(color.GrayModel.Convert(image.At(x, ny-1-y)).(color.Gray).Y))
+
 		go func() {
 			defer wg.Done()
-			err := xb.bake(ripeness.Y)
+			err := xb.bake(ripeness)
 			if err != nil {
 				panic(err.Error())
 			}
@@ -61,14 +63,16 @@ func (yb *yBaker) bake(image image.Image, xBakers []*xBaker, x int) {
 }
 
 type Baker struct {
-	name  string
-	image image.Image
-	db    *sql.DB
+	name     string
+	image    image.Image
+	ripeness uint
+	db       *sql.DB
 }
 
-func MakeBaker(name, imagePath, db string) (*Baker, error) {
+func MakeBaker(name, imagePath string, ripeness uint, db string) (*Baker, error) {
 	b := Baker{
-		name: name,
+		name:     name,
+		ripeness: ripeness,
 	}
 	var err error = nil
 	b.image, err = func() (image.Image, error) {
@@ -120,11 +124,11 @@ func (b *Baker) Prepare() error {
 
 			insert := strings.Builder{}
 			insert.WriteString(fmt.Sprintf("insert into %s.t_%d values", b.name, y))
-			for b := 0; b < WELLDONE; b++ {
-				if b == 0 {
-					insert.WriteString(fmt.Sprintf("(%d)", b))
+			for r := uint(0); r < b.ripeness; r++ {
+				if r == 0 {
+					insert.WriteString(fmt.Sprintf("(%d)", r))
 				} else {
-					insert.WriteString(fmt.Sprintf(", (%d)", b))
+					insert.WriteString(fmt.Sprintf(", (%d)", r))
 				}
 			}
 			go func() {
@@ -181,6 +185,7 @@ func (b *Baker) Bake(intervalSec uint) error {
 
 	ticker := time.NewTicker(time.Duration(intervalSec) * time.Second)
 	done := make(chan struct{})
+	ripenessFactor := float64(b.ripeness) / MaxColor
 	x := 0
 	var wg sync.WaitGroup
 	wg.Add(nx)
@@ -192,7 +197,7 @@ func (b *Baker) Bake(intervalSec uint) error {
 					close(done)
 				}
 				go func() {
-					yb := makeYBaker()
+					yb := makeYBaker(ripenessFactor)
 					yb.bake(b.image, xBakers, x)
 					wg.Done()
 				}()
